@@ -1,8 +1,8 @@
 package com.sistema.examenes.controllers;
 
-import com.sistema.examenes.models.Role;
+import com.sistema.examenes.models.Rol;
 import com.sistema.examenes.models.User;
-import com.sistema.examenes.models.UserRole;
+import com.sistema.examenes.models.UserRol;
 import com.sistema.examenes.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +12,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/usuarios")
+@CrossOrigin("*")
 public class UserController {
 
     @Autowired
@@ -19,17 +20,19 @@ public class UserController {
 
     @PostMapping("/")
     public User saveUser(@RequestBody User user) throws Exception {
-        Set<UserRole> roles = new HashSet<>();
+        user.setProfil("default.png");
+        Set<UserRol> userRoles = new HashSet<>();
 
-        Role role = new Role();
-        role.setRolId(2L);
-        role.setRolName("NORMAL");
+        Rol rol = new Rol();
+        rol.setRolId(2L);
+        rol.setRolName("NORMAL");
 
-        UserRole userRole = new UserRole();
-        userRole.setUser(user);
-        userRole.setRole(role);
+        UserRol userRol = new UserRol();
+        userRol.setUser(user);
+        userRol.setRol(rol);
 
-        return userService.saveUser(user, roles);
+        userRoles.add(userRol);
+        return userService.saveUser(user, userRoles);
     }
 
     @GetMapping("/{username}")
