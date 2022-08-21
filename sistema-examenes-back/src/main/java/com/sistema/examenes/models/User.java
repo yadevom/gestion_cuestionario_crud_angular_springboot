@@ -1,14 +1,17 @@
 package com.sistema.examenes.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,8 +63,37 @@ public class User {
         return username;
     }
 
+    // La cuenta estara activa por un cierto tiempo
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    // Aqui tambien en true
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    // Credenciales no van experirar se ponen en true
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    // Creamos un conjunto de autoridades que viene del paquete modelo
+    // Obtenemos los roles y retornar el nombre
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Set<Authority> authorities = new HashSet<>();
+        this.userRoles.forEach(userRol -> {
+            authorities.add(new Authority(userRol.getRol().getRolName()));
+        });
+        return authorities;
     }
 
     public String getPassword() {
